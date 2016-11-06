@@ -1,0 +1,41 @@
+{
+    "name": "positionserver-frontend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "webpack",
+        "build": "webpack",
+        "postbuild": "copyfiles -f ../resources/static/bundle.js ../../../build/resources/main/static",
+        "watch" : "npm-watch"
+    },
+    "watch": {
+        "build": {
+            "extensions": "js,jsx",
+            "patterns": "."
+        }
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "copyfiles": "^1.0.0",
+        "form-data": "^1.0.0-rc4",
+        "json-loader": "^0.5.4",
+        "react": "^15.2.1",
+        "react-bootstrap": "^0.30.0",
+        "react-dom": "^15.2.1",
+        "react-google-maps": "^4.11.0"
+    },
+    "devDependencies": {
+        "babel-core": "^6.11.4",
+        "babel-loader": "^6.2.4",
+        "babel-preset-es2015": "^6.9.0",
+        "babel-preset-react": "^6.11.1",
+        "copy-webpack-plugin": "^3.0.1",
+        "iconv": "^2.2.1",
+        "node-fetch": "^1.5.3",
+        "npm-watch": "^0.1.6",
+        "watch": "latest",
+        "webpack": "^2.1.0-beta.0"
+    }
+}
