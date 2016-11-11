@@ -18,7 +18,7 @@ class AppVerticle : AbstractVerticle() {
         val app = injector.getInstance(App::class.java)
         Configurator.defaultConfig()
                     .level(Level.INFO)
-                    .writer(FileWriter("positionServer.log"))
+                    .writer(FileWriter(getConfigString(PARAMETER.LOG_FILE)))
                     .writer(ConsoleWriter())
                     .activate()
         app.init(startFuture)

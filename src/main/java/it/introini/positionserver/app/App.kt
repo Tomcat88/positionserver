@@ -18,7 +18,7 @@ import org.pmw.tinylog.Logger
         Logger.info("init!")
         val httpServer = vertx.createHttpServer()
         httpServer.requestHandler{ router.accept(it) }
-                  .listen(8081) {
+                  .listen(getConfigInt(PARAMETER.PORT)) {
                       if (it.succeeded()) {
                           routes.wireRoutes()
                           startFuture.complete()
