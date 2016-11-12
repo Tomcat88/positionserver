@@ -17,11 +17,11 @@ class RoutesManager @Inject constructor(val router: Router, val injector: Inject
     companion object {
         val STATIC_PATH = "static"
 
-        val TRIPS_ROUTE           = "/trips.json"
-        val ADD_TRIP_ROUTE        = "/trip/add"
-        val POSITIONS_ROUTE       = "/:trip/positions.json"
-        val ADD_POSITION_ROUTE    = "/position/add"
-        val DELETE_POSITION_ROUTE = "/position/delete/:id"
+        const val TRIPS_ROUTE           = "/trips.json"
+        const val ADD_TRIP_ROUTE        = "/trip/add"
+        const val POSITIONS_ROUTE       = "/:trip/positions.json"
+        const val ADD_POSITION_ROUTE    = "/position/add"
+        const val DELETE_POSITION_ROUTE = "/position/delete/:id"
     }
 
     fun wireRoutes() {
