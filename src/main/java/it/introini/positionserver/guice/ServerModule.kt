@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule
 import com.google.inject.Inject
 import com.google.inject.Provides
 import com.google.inject.Singleton
+import com.google.inject.name.Named
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.mongo.MongoClient
@@ -14,7 +15,8 @@ import java.lang.reflect.Modifier
 
 class ServerModule : AbstractModule() {
 
-    override fun configure() {}
+    override fun configure() {
+    }
 
     @Provides @Singleton fun vertx() = Vertx.currentContext().owner()
     @Provides @Singleton @Inject fun router(vertx: Vertx) = Router.router(vertx)
@@ -25,8 +27,12 @@ class ServerModule : AbstractModule() {
                                                                  )
 
     @Provides fun reflections() = Reflections("it.introini.positionserver")
-    @Provides @Singleton fun routes(reflections: Reflections) {
-        reflections.getTypesAnnotatedWith(Endpoint::class.java).filter { Modifier.isAbstract(it.modifiers) }
+
+    @Provides
+    @Singleton
+    @JvmSuppressWildcards
+    fun routes(reflections: Reflections): Collection<Class<*>> {
+        return reflections.getTypesAnnotatedWith(Endpoint::class.java).filter { !Modifier.isAbstract(it.modifiers) }
     }
 
 }

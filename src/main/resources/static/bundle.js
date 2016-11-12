@@ -20127,7 +20127,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.addTripUrl = exports.deletePositionUrl = exports.addPositionUrl = exports.tripsUrl = exports.positionsUrl = undefined;
+	exports.tripsUrl = exports.positionsUrl = undefined;
 
 	var _react = __webpack_require__(0);
 
@@ -20145,11 +20145,8 @@
 
 	var wwwRoot = 'http://localhost:8081';
 
-	var positionsUrl = exports.positionsUrl = wwwRoot + '/:trip/positions.json';
-	var tripsUrl = exports.tripsUrl = wwwRoot + '/trips.json';
-	var addPositionUrl = exports.addPositionUrl = wwwRoot + '/position/add';
-	var deletePositionUrl = exports.deletePositionUrl = wwwRoot + '/position/delete';
-	var addTripUrl = exports.addTripUrl = wwwRoot + '/trip/add';
+	var positionsUrl = exports.positionsUrl = wwwRoot + '/positions';
+	var tripsUrl = exports.tripsUrl = wwwRoot + '/trips';
 
 	_reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.getElementById('app'));
 
@@ -30560,7 +30557,7 @@
 	            console.log('saving position');
 	            console.log(position);
 	            position.trip = this.state.selectedTrip.name;
-	            (0, _nodeFetch2.default)(_index.addPositionUrl, { method: 'POST', body: JSON.stringify(position) }).then(function (res) {
+	            (0, _nodeFetch2.default)(_index.positionsUrl, { method: 'PUT', body: JSON.stringify(position) }).then(function (res) {
 	                return res.json();
 	            }).then(function (res) {
 	                console.log(res);
@@ -30576,7 +30573,7 @@
 
 	            console.log('delete position');
 	            console.log(position);
-	            (0, _nodeFetch2.default)(_index.deletePositionUrl + '/' + position._id, { method: 'POST' }).then(function (res) {
+	            (0, _nodeFetch2.default)(_index.positionsUrl + '?id=' + position._id, { method: 'DELETE' }).then(function (res) {
 	                return res.json();
 	            }).then(function (res) {
 	                console.log(res);
@@ -30602,7 +30599,7 @@
 	        value: function onTripClick(trip) {
 	            var _this5 = this;
 
-	            (0, _nodeFetch2.default)(_index.positionsUrl.replace(':trip', trip.name)).then(function (res) {
+	            (0, _nodeFetch2.default)(_index.positionsUrl + '?trip=' + trip.name).then(function (res) {
 	                return res.json();
 	            }).then(function (json) {
 	                console.log(json);
@@ -30656,7 +30653,7 @@
 	        value: function saveTrip(trip) {
 	            var _this6 = this;
 
-	            (0, _nodeFetch2.default)(_index.addTripUrl, { method: 'POST', body: JSON.stringify(trip) }).then(function (res) {
+	            (0, _nodeFetch2.default)(_index.tripsUrl, { method: 'PUT', body: JSON.stringify(trip) }).then(function (res) {
 	                return res.json();
 	            }).then(function (json) {
 	                var trips = _this6.state.trips;
@@ -31524,35 +31521,44 @@
 	                return null;
 	            } else {
 	                return _react2.default.createElement(
-	                    'div',
+	                    _reactBootstrap.Panel,
 	                    null,
 	                    _react2.default.createElement(
-	                        _reactBootstrap.ControlLabel,
-	                        null,
-	                        'Nome'
-	                    ),
-	                    _react2.default.createElement(_reactBootstrap.FormControl, {
-	                        type: 'text',
-	                        onChange: this.handleNameChange.bind(this)
-	                    }),
-	                    _react2.default.createElement(
-	                        _reactBootstrap.ControlLabel,
-	                        null,
-	                        'Descrizione'
-	                    ),
-	                    _react2.default.createElement(_reactBootstrap.FormControl, {
-	                        type: 'text',
-	                        onChange: this.handleDescriptionChange.bind(this)
-	                    }),
-	                    _react2.default.createElement(
-	                        _reactBootstrap.Button,
-	                        { bsStyle: 'primary', onClick: this.saveTrip.bind(this) },
-	                        'Salva'
+	                        _reactBootstrap.Col,
+	                        { md: 6 },
+	                        _react2.default.createElement(_reactBootstrap.FormControl, {
+	                            type: 'text',
+	                            onChange: this.handleNameChange.bind(this),
+	                            placeholder: 'Nome'
+	                        })
 	                    ),
 	                    _react2.default.createElement(
-	                        _reactBootstrap.Button,
-	                        { onClick: this.close.bind(this), bsStyle: 'danger' },
-	                        'Chiudi '
+	                        _reactBootstrap.Col,
+	                        { md: 6 },
+	                        _react2.default.createElement(_reactBootstrap.FormControl, {
+	                            type: 'text',
+	                            onChange: this.handleDescriptionChange.bind(this),
+	                            placeholder: 'Descrizione'
+	                        })
+	                    ),
+	                    _react2.default.createElement(
+	                        _reactBootstrap.Col,
+	                        { md: 12, style: { marginTop: "10px" } },
+	                        _react2.default.createElement(
+	                            _reactBootstrap.Button,
+	                            {
+	                                bsStyle: 'primary',
+	                                onClick: this.saveTrip.bind(this),
+	                                style: { marginRight: "10px" } },
+	                            'Salva'
+	                        ),
+	                        _react2.default.createElement(
+	                            _reactBootstrap.Button,
+	                            {
+	                                onClick: this.close.bind(this),
+	                                bsStyle: 'danger' },
+	                            'Chiudi'
+	                        )
 	                    )
 	                );
 	            }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ControlLabel, FormControl } from 'react-bootstrap'
+import { Panel, Button, ControlLabel, FormControl, Col } from 'react-bootstrap'
 
 class AddTripForm extends React.Component {
 
@@ -31,20 +31,35 @@ class AddTripForm extends React.Component {
             return null;
         } else {
             return (
-                <div>
-                    <ControlLabel>Nome</ControlLabel>
-                    <FormControl
-                        type="text"
-                        onChange={this.handleNameChange.bind(this)}
-                        />
-                    <ControlLabel>Descrizione</ControlLabel>
-                    <FormControl
-                        type="text"
-                        onChange={this.handleDescriptionChange.bind(this)}
-                        />
-                    <Button bsStyle="primary" onClick={this.saveTrip.bind(this)} >Salva</Button>
-                    <Button onClick={this.close.bind(this)} bsStyle="danger">Chiudi </Button>
-                </div>
+                <Panel>
+                    <Col md={6}>
+                        <FormControl
+                            type="text"
+                            onChange={this.handleNameChange.bind(this)}
+                            placeholder="Nome"
+                            />
+                    </Col>
+                    <Col md={6}>
+                        <FormControl
+                            type="text"
+                            onChange={this.handleDescriptionChange.bind(this)}
+                            placeholder="Descrizione"
+                            />
+                    </Col>
+                    <Col md={12} style={{ marginTop: "10px" }}>
+                        <Button
+                            bsStyle="primary"
+                            onClick={this.saveTrip.bind(this)}
+                            style={{ marginRight: "10px" }}>
+                            Salva
+                        </Button>
+                        <Button
+                            onClick={this.close.bind(this)}
+                            bsStyle="danger">
+                            Chiudi
+                            </Button>
+                    </Col>
+                </Panel>
             );
         }
     }

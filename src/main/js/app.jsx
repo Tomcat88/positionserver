@@ -1,4 +1,4 @@
-import { tripsUrl, addTripUrl, positionsUrl, addPositionUrl, deletePositionUrl } from './index.js'
+import { tripsUrl, positionsUrl } from './index.js'
 import React from 'react'
 import fetch from 'node-fetch'
 import { ListGroup, ListGroupItem, Col, Button, Modal, ControlLabel, FormControl, Panel, Glyphicon } from 'react-bootstrap'
@@ -37,7 +37,7 @@ class App extends React.Component {
         console.log('saving position');
         console.log(position);
         position.trip = this.state.selectedTrip.name;
-        fetch(addPositionUrl, { method: 'POST', body: JSON.stringify(position) })
+        fetch(positionsUrl, { method: 'PUT', body: JSON.stringify(position) })
             .then((res) => res.json())
             .then((res) => {
                 console.log(res);
@@ -50,7 +50,7 @@ class App extends React.Component {
     deletePosition(position) {
         console.log('delete position');
         console.log(position);
-        fetch(deletePositionUrl + '/' + position._id, { method: 'POST' })
+        fetch(positionsUrl + '?id=' + position._id, { method: 'DELETE' })
             .then((res) => res.json())
             .then((res) => {
                 console.log(res);
@@ -70,7 +70,7 @@ class App extends React.Component {
     }
 
     onTripClick(trip) {
-        fetch(positionsUrl.replace(':trip', trip.name))
+        fetch(positionsUrl + '?trip=' + trip.name)
             .then(res => res.json())
             .then(json => {
                 console.log(json);
@@ -116,7 +116,7 @@ class App extends React.Component {
     }
 
     saveTrip(trip) {
-        fetch(addTripUrl, {method: 'POST', body: JSON.stringify(trip)})
+        fetch(tripsUrl, {method: 'PUT', body: JSON.stringify(trip)})
             .then(res => res.json())
             .then(json => {
                 const trips = this.state.trips;
