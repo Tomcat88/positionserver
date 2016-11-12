@@ -3,6 +3,7 @@ package it.introini.positionserver.routes.impl
 import com.google.inject.Inject
 import io.netty.handler.codec.http.HttpResponseStatus
 import io.vertx.core.Handler
+import io.vertx.core.json.Json
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.mongo.MongoClient
@@ -15,10 +16,14 @@ import java.time.Instant
 @Endpoint(RoutesManager.TRIPS_ROUTE)
 class TripsRoute @Inject constructor(val mongoClient: MongoClient) {
 
-    @NotNull @Put fun put(event: RoutingContext) {
+    val TRIPS_COLLECTION = "trips"
+
+    @NotNull
+    @Put
+    fun put(event: RoutingContext) {
         val doc = event.bodyAsJson
         doc.put("ts", Instant.now().toString())
-        mongoClient.insert("trips", doc, {
+        mongoClient.insert(TRIPS_COLLECTION, doc, {
             if (it.succeeded()) {
                 event.response().end(doc.encode())
             } else {
@@ -28,8 +33,10 @@ class TripsRoute @Inject constructor(val mongoClient: MongoClient) {
         })
     }
 
-    @NotNull @Get fun get(event: RoutingContext) {
-        mongoClient.find("trips", JsonObject(), {
+    @NotNull
+    @Get
+    fun get(event: RoutingContext) {
+        mongoClient.find(TRIPS_COLLECTION, JsonObject(), {
             if (it.succeeded()) {
                 event.response()
                         .setStatusCode(HttpResponseStatus.OK.code())
@@ -40,7 +47,23 @@ class TripsRoute @Inject constructor(val mongoClient: MongoClient) {
         })
     }
 
-    @NotNull @Delete fun deleteTrip(event: RoutingContext) {
-
+    @NotNull
+    @Delete
+    fun deleteTrip(event: RoutingContext) {
+        val name = event.request().getParam("name")
+        if (name == null) {
+            event.fail(400)
+        } else {
+            mongoClient.removeDocument(TRIPS_COLLECTION, JsonObject().put("name", name), {
+                if (it.succeeded()) {
+                    event.response()
+                         .setStatusCode(HttpResponseStatus.OK.code())
+                         .end(JsonObject().put("name", name).encode())
+                } else {
+                    Logger.error(it.cause())
+                    event.fail(500)
+                }
+            })
+        }
     }
 }

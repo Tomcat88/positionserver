@@ -8,12 +8,14 @@ import MapModal from './MapModal.jsx'
 import TripList from './TripList.jsx'
 import TripPositions from './TripPositions.jsx'
 import AddTripForm from './AddTripForm.jsx'
+import _ from 'underscore'
 
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             trips: [],
+            selectedTrip: null,
             showModal: false,
             positions: [],
             mapPosition: {},
@@ -134,6 +136,22 @@ class App extends React.Component {
         });
     }
 
+    onDeleteTripClick() {
+        const trip = this.state.selectedTrip;
+        if(trip) {
+            fetch(tripsUrl + '?name=' + trip.name, {method: "DELETE"})
+                .then(res => res.json())
+                .then(json => {
+                    console.log(json);
+                    const trips = this.state.trips;
+                    this.setState({
+                        selectedTrip: null,
+                        trips: _.filter(trips, t => t.name !== trip.name)
+                    });
+                });
+        }
+    }
+
     render() {
         return (
             <Col md={12}>
@@ -158,6 +176,7 @@ class App extends React.Component {
                         deletePosition={this.deletePosition.bind(this)}
                         onAddClick={this.onAddClick.bind(this)}
                         onShowAllClick={this.onShowAllClick.bind(this)}
+                        onDeleteTripClick={this.onDeleteTripClick.bind(this)}
                         />
                     <AddPositionModal
                         position={this.state.mapPosition}
