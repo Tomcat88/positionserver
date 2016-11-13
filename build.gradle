@@ -38,7 +38,7 @@ dependencies {
 }
 
 shadowJar {
-    baseName = 'shadow-portal'
+    baseName = 'shadow-position-server'
     classifier = null
     version = null
     manifest {
