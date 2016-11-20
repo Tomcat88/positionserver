@@ -20144,7 +20144,7 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var baseUrl = "/ps";
-	var wwwRoot = "http://188.213.170.42:8081/" + baseUrl;
+	var wwwRoot = "http://188.213.170.42:8081" + baseUrl;
 
 	var positionsUrl = exports.positionsUrl = wwwRoot + '/positions';
 	var tripsUrl = exports.tripsUrl = wwwRoot + '/trips';
