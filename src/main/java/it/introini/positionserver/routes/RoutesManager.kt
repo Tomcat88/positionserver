@@ -44,6 +44,9 @@ class RoutesManager @Inject constructor(val router: Router,
                           if (method == null) {
                               event.response().end("Method not allowed!")
                           } else {
+                              if (env == ENVIRONMENT.PROD) {
+                                  event.response().putHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://188.213.170.42/")
+                              }
                               method.invoke(handler,event)
                           }
                       }
