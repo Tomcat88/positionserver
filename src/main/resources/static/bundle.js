@@ -20143,7 +20143,8 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var wwwRoot = 'http://localhost:8081';
+	var baseUrl = "/ps";
+	var wwwRoot = 'http://localhost:8081' + baseUrl;
 
 	var positionsUrl = exports.positionsUrl = wwwRoot + '/positions';
 	var tripsUrl = exports.tripsUrl = wwwRoot + '/trips';

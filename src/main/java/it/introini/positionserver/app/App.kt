@@ -17,12 +17,13 @@ import org.pmw.tinylog.Logger
     fun init(startFuture : Future<Void>) {
         Logger.info("init!")
         val httpServer = vertx.createHttpServer()
+        val port = getConfigInt(PARAMETER.PORT)
         httpServer.requestHandler{ router.accept(it) }
-                  .listen(getConfigInt(PARAMETER.PORT)) {
+                  .listen(port) {
                       if (it.succeeded()) {
                           routes.wireRoutes()
                           startFuture.complete()
-                          Logger.info("Startup completed! listening on port 8081")
+                          Logger.info("Startup completed (${getEnv()})! listening on port $port")
                       } else {
                           Logger.error("Something went wrong ${it.cause().message}",it.cause())
                           startFuture.fail(it.cause())

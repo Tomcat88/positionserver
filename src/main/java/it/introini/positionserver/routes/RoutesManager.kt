@@ -9,6 +9,8 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.StaticHandler
 import io.vertx.ext.web.impl.Utils
+import it.introini.positionserver.app.ENVIRONMENT
+import it.introini.positionserver.app.getEnv
 import org.pmw.tinylog.Logger
 
 @Singleton
@@ -20,14 +22,16 @@ class RoutesManager @Inject constructor(val router: Router,
     companion object {
         val STATIC_PATH = "static"
 
-        const val TRIPS_ROUTE           = "/trips"
-        const val POSITIONS_ROUTE       = "/positions"
+        const val BASE                  = "ps"
+        const val TRIPS_ROUTE           = "/$BASE/trips"
+        const val POSITIONS_ROUTE       = "/$BASE/positions"
     }
 
     fun wireRoutes() {
         Logger.info("Wiring routes")
-        router.route("/$STATIC_PATH/*").handler(StaticHandler.create(STATIC_PATH).setCachingEnabled(false))
-        router.route("/*").handler(BodyHandler.create())
+        val env = getEnv()
+        router.route("/$BASE/$STATIC_PATH/*").handler(StaticHandler.create(STATIC_PATH).setCachingEnabled(env == ENVIRONMENT.PROD))
+        router.route("/$BASE/*").handler(BodyHandler.create())
         routeClasses.forEach { clazz ->
             val handler = injector.getInstance(clazz)
             val endpoint = clazz.getAnnotation(Endpoint::class.java).endpoint
@@ -45,7 +49,7 @@ class RoutesManager @Inject constructor(val router: Router,
                       }
             }
         }
-        router.route("/").blockingHandler {
+        router.route("/$BASE").blockingHandler {
             val index = Utils.readResourceToBuffer("index.html")
             it.response()
               .putHeader(HttpHeaders.CONTENT_TYPE, "text/html")
