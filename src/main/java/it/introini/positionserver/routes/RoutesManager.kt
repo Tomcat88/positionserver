@@ -11,6 +11,7 @@ import io.vertx.ext.web.handler.StaticHandler
 import io.vertx.ext.web.impl.Utils
 import it.introini.positionserver.app.ENVIRONMENT
 import it.introini.positionserver.app.getEnv
+import it.introini.positionserver.routes.impl.AuthRoute
 import org.pmw.tinylog.Logger
 
 @Singleton
@@ -23,8 +24,10 @@ class RoutesManager @Inject constructor(val router: Router,
         val STATIC_PATH = "static"
 
         const val BASE                  = "ps"
-        const val TRIPS_ROUTE           = "/$BASE/trips"
-        const val POSITIONS_ROUTE       = "/$BASE/positions"
+        const val AUTH_BASE             = "$BASE/auth"
+        const val LOGIN_ROUTE           = "/$BASE/login"
+        const val TRIPS_ROUTE           = "/$AUTH_BASE/trips"
+        const val POSITIONS_ROUTE       = "/$AUTH_BASE/positions"
     }
 
     fun wireRoutes() {
@@ -32,6 +35,7 @@ class RoutesManager @Inject constructor(val router: Router,
         val env = getEnv()
         router.route("/$BASE/$STATIC_PATH/*").handler(StaticHandler.create(STATIC_PATH).setCachingEnabled(env == ENVIRONMENT.PROD))
         router.route("/$BASE/*").handler(BodyHandler.create())
+        router.route("/$AUTH_BASE/*").blockingHandler(injector.getInstance(AuthRoute::class.java))
         routeClasses.forEach { clazz ->
             val handler = injector.getInstance(clazz)
             val endpoint = clazz.getAnnotation(Endpoint::class.java).endpoint

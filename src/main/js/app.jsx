@@ -1,4 +1,4 @@
-import { tripsUrl, positionsUrl } from './index.js'
+import { tripsUrl, positionsUrl, loginUrl } from './index.js'
 import React from 'react'
 import fetch from 'node-fetch'
 import { ListGroup, ListGroupItem, Col, Button, Modal, ControlLabel, FormControl, Panel, Glyphicon } from 'react-bootstrap'
@@ -8,7 +8,9 @@ import MapModal from './MapModal.jsx'
 import TripList from './TripList.jsx'
 import TripPositions from './TripPositions.jsx'
 import AddTripForm from './AddTripForm.jsx'
+import LoginControl from './LoginControl.jsx'
 import _ from 'underscore'
+import jsBase64 from 'js-base64'
 
 class App extends React.Component {
     constructor(props) {
@@ -19,13 +21,16 @@ class App extends React.Component {
             showModal: false,
             positions: [],
             mapPosition: {},
-            add: true
+            add: true,
+            token: null
         };
     }
 
     componentDidMount() {
-        console.log(tripsUrl);
-        fetch(tripsUrl)
+    }
+
+    loadTrips() {
+        fetch(tripsUrl, {headers : this.getTokenHeader()})
             .then(res => res.json())
             .then(json => {
                 this.setState({
@@ -72,7 +77,7 @@ class App extends React.Component {
     }
 
     onTripClick(trip) {
-        fetch(positionsUrl + '?trip=' + trip.name)
+        fetch(positionsUrl + '?trip=' + trip.name, {headers : this.getTokenHeader()})
             .then(res => res.json())
             .then(json => {
                 console.log(json);
@@ -118,14 +123,14 @@ class App extends React.Component {
     }
 
     saveTrip(trip) {
-        fetch(tripsUrl, {method: 'PUT', body: JSON.stringify(trip)})
+        fetch(tripsUrl, { method: 'PUT', body: JSON.stringify(trip) })
             .then(res => res.json())
             .then(json => {
                 const trips = this.state.trips;
                 trips.push(json);
                 this.setState({
-                   trips,
-                   addTrip: false 
+                    trips,
+                    addTrip: false
                 });
             });
     }
@@ -138,8 +143,8 @@ class App extends React.Component {
 
     onDeleteTripClick() {
         const trip = this.state.selectedTrip;
-        if(trip) {
-            fetch(tripsUrl + '?name=' + trip.name, {method: "DELETE"})
+        if (trip) {
+            fetch(tripsUrl + '?name=' + trip.name, { method: "DELETE" })
                 .then(res => res.json())
                 .then(json => {
                     console.log(json);
@@ -152,48 +157,75 @@ class App extends React.Component {
         }
     }
 
+    login(user,password) {
+        fetch(loginUrl, {method: 'POST', body: JSON.stringify({user: user, password: password})})
+            .then(res => res.json())
+            .then(json => {
+                this.setState({
+                    token: json.token
+                });
+                this.loadTrips();
+            })
+    }
+
+    getTokenHeader() {
+        if (this.state.token) {
+            return {
+                "Authorization": jsBase64.Base64.encode("Password:" + this.state.token)
+            }
+        } else {
+            return {};
+        }
+    }
+
     render() {
-        return (
-            <Col md={12}>
-                <Col md={4}>
-                    <Panel>
-                        <Button bsStyle="primary" bsSize="small" onClick={this.onAddTripClick.bind(this)}><Glyphicon glyph="plus" /> Aggiungi viaggio</Button>
-                    </Panel>
-                    <AddTripForm 
-                        show={this.state.addTrip} 
-                        saveTrip={this.saveTrip.bind(this)} 
-                        close={this.closeAddTrip.bind(this)}/>
-                    <TripList
-                        trips={this.state.trips}
-                        onTripClick={this.onTripClick.bind(this)}
-                        />
+        if (this.state.token) {
+            return (
+                <Col md={12}>
+                    <Col md={4}>
+                        <Panel>
+                            <Button bsStyle="primary" bsSize="small" onClick={this.onAddTripClick.bind(this)}><Glyphicon glyph="plus" /> Aggiungi viaggio</Button>
+                        </Panel>
+                        <AddTripForm
+                            show={this.state.addTrip}
+                            saveTrip={this.saveTrip.bind(this)}
+                            close={this.closeAddTrip.bind(this)} />
+                        <TripList
+                            trips={this.state.trips}
+                            onTripClick={this.onTripClick.bind(this)}
+                            />
+                    </Col>
+                    <Col md={6}>
+                        <TripPositions
+                            trip={this.state.selectedTrip}
+                            positions={this.state.positions}
+                            showMapModal={this.showMapModal.bind(this)}
+                            deletePosition={this.deletePosition.bind(this)}
+                            onAddClick={this.onAddClick.bind(this)}
+                            onShowAllClick={this.onShowAllClick.bind(this)}
+                            onDeleteTripClick={this.onDeleteTripClick.bind(this)}
+                            />
+                        <AddPositionModal
+                            position={this.state.mapPosition}
+                            add={this.state.add}
+                            show={this.state.showModal}
+                            close={this.closeModal.bind(this)}
+                            savePosition={this.savePosition.bind(this)}
+                            />
+                        <MapModal
+                            show={this.state.showAll}
+                            positions={this.state.positions}
+                            close={this.closeMapModal.bind(this)}
+                            readOnly={true}
+                            />
+                    </Col>
                 </Col>
-                <Col md={6}>
-                    <TripPositions
-                        trip={this.state.selectedTrip}
-                        positions={this.state.positions}
-                        showMapModal={this.showMapModal.bind(this)}
-                        deletePosition={this.deletePosition.bind(this)}
-                        onAddClick={this.onAddClick.bind(this)}
-                        onShowAllClick={this.onShowAllClick.bind(this)}
-                        onDeleteTripClick={this.onDeleteTripClick.bind(this)}
-                        />
-                    <AddPositionModal
-                        position={this.state.mapPosition}
-                        add={this.state.add}
-                        show={this.state.showModal}
-                        close={this.closeModal.bind(this)}
-                        savePosition={this.savePosition.bind(this)}
-                        />
-                    <MapModal
-                        show={this.state.showAll}
-                        positions={this.state.positions}
-                        close={this.closeMapModal.bind(this)}
-                        readOnly={true}
-                        />
-                </Col>
-            </Col>
-        )
+            )
+        } else {
+            return (
+                <LoginControl login={this.login.bind(this)} />
+            )
+        }
     }
 }
 
