@@ -20146,8 +20146,8 @@
 
 	var baseUrl = "/ps";
 	var baseAuth = baseUrl + "/auth";
-	var wwwRoot = "http://localhost:8081" + baseAuth;
-	var wwwPublicRoot = "http://localhost:8081" + baseUrl;
+	var wwwRoot = "http://188.213.170.42:8081" + baseAuth;
+	var wwwPublicRoot = "http://188.213.170.42:8081" + baseUrl;
 
 	var loginUrl = exports.loginUrl = wwwPublicRoot + '/login';
 	var positionsUrl = exports.positionsUrl = wwwRoot + '/positions';
