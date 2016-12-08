@@ -40,7 +40,8 @@ class LoginControl extends React.Component {
                         onChange={this.onChangePassword}
                         />
                     <Button bsStyle="primary"
-                            onClick={this.login}>
+                            onClick={this.login}
+                            style={{ marginTop: "10px" }}>
                     Login
                     </Button>
                 </Col>

@@ -57,6 +57,7 @@ class MapComponent extends React.Component {
     const center = this.state.center || { lat: 45.509495 ,lng: 8.81567 }
     return (
       <GoogleMapLoader
+        query={{ key: GOOGLE_MAPS_API_KEY, libraries: "geometry,drawing,places" }}
         containerElement={
           <div
             style={{

@@ -11,10 +11,12 @@ import AddTripForm from './AddTripForm.jsx'
 import LoginControl from './LoginControl.jsx'
 import _ from 'underscore'
 import jsBase64 from 'js-base64'
+import * as Cookies from 'js-cookie'
 
 class App extends React.Component {
     constructor(props) {
         super(props);
+        var maybeToken = Cookies.get('token');
         this.state = {
             trips: [],
             selectedTrip: null,
@@ -22,11 +24,15 @@ class App extends React.Component {
             positions: [],
             mapPosition: {},
             add: true,
-            token: null
+            token: maybeToken || null
         };
+        if (this.state.token) {
+            this.loadTrips();
+        }
     }
 
     componentDidMount() {
+        
     }
 
     loadTrips() {
@@ -44,7 +50,7 @@ class App extends React.Component {
         console.log('saving position');
         console.log(position);
         position.trip = this.state.selectedTrip.name;
-        fetch(positionsUrl, { method: 'PUT', body: JSON.stringify(position) })
+        fetch(positionsUrl, { method: 'PUT', body: JSON.stringify(position), headers: this.getTokenHeader() })
             .then((res) => res.json())
             .then((res) => {
                 console.log(res);
@@ -57,7 +63,7 @@ class App extends React.Component {
     deletePosition(position) {
         console.log('delete position');
         console.log(position);
-        fetch(positionsUrl + '?id=' + position._id, { method: 'DELETE' })
+        fetch(positionsUrl + '?id=' + position._id, { method: 'DELETE', headers: this.getTokenHeader() })
             .then((res) => res.json())
             .then((res) => {
                 console.log(res);
@@ -123,7 +129,7 @@ class App extends React.Component {
     }
 
     saveTrip(trip) {
-        fetch(tripsUrl, { method: 'PUT', body: JSON.stringify(trip) })
+        fetch(tripsUrl, { method: 'PUT', body: JSON.stringify(trip), headers: this.getTokenHeader() })
             .then(res => res.json())
             .then(json => {
                 const trips = this.state.trips;
@@ -144,7 +150,7 @@ class App extends React.Component {
     onDeleteTripClick() {
         const trip = this.state.selectedTrip;
         if (trip) {
-            fetch(tripsUrl + '?name=' + trip.name, { method: "DELETE" })
+            fetch(tripsUrl + '?name=' + trip.name, { method: "DELETE", headers: this.getTokenHeader() })
                 .then(res => res.json())
                 .then(json => {
                     console.log(json);
@@ -161,11 +167,19 @@ class App extends React.Component {
         fetch(loginUrl, {method: 'POST', body: JSON.stringify({user: user, password: password})})
             .then(res => res.json())
             .then(json => {
+                Cookies.set('token', json.token);
                 this.setState({
                     token: json.token
                 });
                 this.loadTrips();
             })
+    }
+
+    logout() {
+        Cookies.remove('token');
+        this.setState({
+            token: null
+        });
     }
 
     getTokenHeader() {
@@ -185,6 +199,7 @@ class App extends React.Component {
                     <Col md={4}>
                         <Panel>
                             <Button bsStyle="primary" bsSize="small" onClick={this.onAddTripClick.bind(this)}><Glyphicon glyph="plus" /> Aggiungi viaggio</Button>
+                            <Button className="pull-right" bsStyle="warning" bsSize="small" onClick={this.logout.bind(this)}><Glyphicon glyph="log-out" /> Logout</Button>
                         </Panel>
                         <AddTripForm
                             show={this.state.addTrip}

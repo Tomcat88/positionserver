@@ -3,6 +3,7 @@ package it.introini.positionserver.routes.impl
 import com.google.inject.Inject
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.mongo.MongoClient
+import io.vertx.ext.web.Cookie
 import io.vertx.ext.web.RoutingContext
 import it.introini.positionserver.routes.Endpoint
 import it.introini.positionserver.routes.Post
@@ -37,6 +38,7 @@ class LoginRoute @Inject constructor(val mongoClient: MongoClient){
                             mongoClient.updateCollection("users", JsonObject().put(USER_PARAM, user), JsonObject().put("\$set", tokenObj), {
                                 if (it.succeeded()) {
                                     Logger.info("updated token for user $user")
+                                    event.addCookie(Cookie.cookie("token", token))
                                     event.response().end(tokenObj.encodePrettily())
                                 } else {
                                     event.fail(it.cause())
